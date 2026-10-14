@@ -52,7 +52,7 @@ Status key:
 | 13b | Spawn anchor recipe: 8 obsidian around a compass | `CraftingManager` | `CraftingManagerMixin` | Compiled only |
 | 13c | Singleplayer use: sets the **world** spawn and shows "Spawn point set." in chat | `BlockSpawnAnchor.blockActivated`, `EntityPlayer`/`EntityPlayerSP.addChatMessage` | `SpawnAnchorBlock.use` + `ClientPlayerEntityAccessor` (chat goes to the same `GameGui.addChatMessage`) | Compiled only |
 | 13d | Portal particles above the anchor (was uncommitted in RetroMCP) | `BlockSpawnAnchor.randomDisplayTick` | `SpawnAnchorBlock.randomDisplayTick` | Compiled only |
-| S1 | **Server:** per-player spawn anchor, saved to player NBT (`HasSpawnAnchor`, `SpawnAnchorX/Y/Z`) and used on respawn if the block still exists; "Spawn point set." is sent as a chat packet | `minecraft_server`: `BlockSpawnAnchor`, `EntityPlayer`, `ServerConfigurationManager.recreatePlayerEntity` | `server/`: `SpawnAnchorBlock`, `SpawnAnchorHolder`, `PlayerEntityMixin` (fields + NBT), `PlayerManagerMixin` (respawn, via MixinExtras `@ModifyExpressionValue`) | Applied (runtime): the dev server reached "Done!"; the respawn hook runs right after the new player is constructed, as in the original |
+| S1 | **Server:** per-player spawn anchor, saved to player NBT (`HasSpawnAnchor`, `SpawnAnchorX/Y/Z`) and used on respawn if the block still exists; "Spawn point set." is sent as a chat packet | `minecraft_server`: `BlockSpawnAnchor`, `EntityPlayer`, `ServerConfigurationManager.recreatePlayerEntity` | `server/`: `SpawnAnchorBlock`, `SpawnAnchorHolder`, `PlayerEntityMixin` (fields + NBT), `PlayerManagerMixin` (respawn, via MixinExtras `@ModifyExpressionValue`) | **Verified (runtime)**, 2026-10-14, on the Ornithe server install with the Prism client: right-clicking sets the anchor and shows "Spawn point set."; the anchor is saved to the player file and kept across a server restart; the player respawns on the anchor and can walk off (after the respawn-height fix below). **Untested:** respawning at world spawn after the anchor is broken, and two players with different anchors. |
 | S2 | **Server:** copies of features 5–12 and the spawn anchor block (id 92) | `minecraft_server/src` | `server/` (same Feather names as the client, so these mirror the client mixins) | Applied (runtime) |
 | S3 | **Server:** recipe changes | — | — | Not applicable: the RetroMCP server never had them, so the server port doesn't add them either |
 
@@ -85,7 +85,9 @@ uses for a normal respawn. Singleplayer is unchanged. There the client pushes th
 block onto its top, as vanilla does for any spawn, with no server round trip involved. The server sends block id 92, which a
 vanilla client doesn't have.
 
-## In-game test plan (not yet run)
+## In-game test plan
+
+Steps 1–8 have not been run yet. On the server, the single-player parts of steps 9 and 10 passed on 2026-10-14; step 11 and the two-player part of step 9 have not been run yet.
 
 Use a fresh singleplayer world in the Prism instance (or `runClient`):
 
