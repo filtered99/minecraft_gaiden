@@ -10,6 +10,7 @@
 	"contact": {
 		"sources": "https://github.com/filtered99/minecraft_gaiden"
 	},
+	"license": "CC0-1.0",
 	"icon": "assets/gaiden/icon.png",
 	"environment": "client",
 	"mixins": [

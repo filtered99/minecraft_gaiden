@@ -81,5 +81,5 @@ decompiled Minecraft source.
 
 ## License
 
-The template's own license is in [LICENSE-TEMPLATE.md](LICENSE-TEMPLATE.md) and does not cover this mod.
-No license has been chosen for Gaiden yet.
+Minecraft Gaiden is released under [CC0 1.0](LICENSE): it is dedicated to the public domain.
+This covers Gaiden's own code only, not Minecraft.
