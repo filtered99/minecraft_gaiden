@@ -23,7 +23,7 @@ The mod jar is written to `build/libs/gaiden-<version>+mca1.2.6.jar` (ignore the
 ## Run in development
 
 ```sh
-./gradlew runClient
+./gradlew :runClient
 ```
 
 ## Install in Prism
