@@ -52,8 +52,9 @@ Status key:
 | 13b | Spawn anchor recipe: 8 obsidian around a compass | `CraftingManager` | `CraftingManagerMixin` | Compiled only |
 | 13c | Singleplayer use: sets the **world** spawn and shows "Spawn point set." in chat | `BlockSpawnAnchor.blockActivated`, `EntityPlayer`/`EntityPlayerSP.addChatMessage` | `SpawnAnchorBlock.use` + `ClientPlayerEntityAccessor` (chat goes to the same `GameGui.addChatMessage`) | Compiled only |
 | 13d | Portal particles above the anchor (was uncommitted in RetroMCP) | `BlockSpawnAnchor.randomDisplayTick` | `SpawnAnchorBlock.randomDisplayTick` | Compiled only |
-| S1 | **Server:** per-player spawn anchor, saved to player NBT (`HasSpawnAnchor`, `SpawnAnchorX/Y/Z`) and used on respawn if the block still exists | `minecraft_server`: `BlockSpawnAnchor`, `EntityPlayer`, `ServerConfigurationManager` | — | **Not ported.** Needs a second Loom target for the `a0.2.8` server jar (see below). |
-| S2 | **Server:** copies of features 5–12 and the spawn anchor block | `minecraft_server/src` | — | **Not ported**, same blocker. The RetroMCP server copy never had the recipe changes (2–4, 13b). |
+| S1 | **Server:** per-player spawn anchor, saved to player NBT (`HasSpawnAnchor`, `SpawnAnchorX/Y/Z`) and used on respawn if the block still exists; "Spawn point set." is sent as a chat packet | `minecraft_server`: `BlockSpawnAnchor`, `EntityPlayer`, `ServerConfigurationManager.recreatePlayerEntity` | `server/`: `SpawnAnchorBlock`, `SpawnAnchorHolder`, `PlayerEntityMixin` (fields + NBT), `PlayerManagerMixin` (respawn, via MixinExtras `@ModifyExpressionValue`) | Applied (runtime): the dev server reached "Done!"; the respawn hook runs right after the new player is constructed, as in the original |
+| S2 | **Server:** copies of features 5–12 and the spawn anchor block (id 92) | `minecraft_server/src` | `server/` (same Feather names as the client, so these mirror the client mixins) | Applied (runtime) |
+| S3 | **Server:** recipe changes | — | — | Not applicable: the RetroMCP server never had them, so the server port doesn't add them either |
 
 Not features: `.idea`/`.iml` changes, `minecraft_server/game/ops.txt` (runtime file), and the removed world save files.
 
@@ -61,13 +62,21 @@ Note on #10: `FireBlock` is built partway through `Block`'s static initializer, 
 blocks exist. That is why the original used raw ids (see the RetroMCP commit "Fix fire block initialization crash").
 The port keeps the raw ids for the same reason.
 
-## Server-side blocker
+## Server mod (`server/` subproject)
 
-Feather, intermediary and the Prism instance target only the **client** jar `a1.2.6`. In Alpha, singleplayer runs
-entirely in the client, so everything above covers singleplayer. The per-player anchor (S1) lives only in the
-separate multiplayer server (`a0.2.8`, which has its own intermediary). Porting it needs a server build of the mod
-against `a0.2.8` (a second Gradle project or source set with `minecraft_version = a0.2.8`). Whether Feather mappings
-exist for `a0.2.8` has not been checked yet.
+The Alpha multiplayer server is a separate game jar, `a0.2.8`, which pairs with client `a1.2.6`. The `server`
+Gradle subproject builds `gaiden-server-<version>+mca0.2.8.jar` against it:
+
+- Mappings are Feather gen2 `a0.2.8+build.2` with intermediary `calamus-intermediary-gen2:a0.2.8`.
+- `fabric.mod.json` must depend on `1.0.0-alpha.2.8`, which is how Loader normalises `a0.2.8`.
+- `:server:genSources` fails because Feather's unpick data references LWJGL constants the server doesn't ship.
+  This only affects the readable-source step; `build` and `runServer` work. To read the server code, decompile the
+  mapped jar under `.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-server-*` with Vineflower.
+- The client and server mods are separate source trees, like the two RetroMCP projects. A fix to a shared
+  block or item change has to be made in both.
+
+Players joining a Gaiden server need the Gaiden client mod as well. The server sends block id 92, which a
+vanilla client doesn't have.
 
 ## In-game test plan (not yet run)
 
@@ -83,3 +92,10 @@ Use a fresh singleplayer world in the Prism instance (or `runClient`):
 7. Place a spawn anchor: check the portal particles, right-click it ("Spawn point set."), die and respawn at it.
    Save and quit, reload the world, die again and confirm the spawn is still at the anchor (world spawn is saved in `level.dat`).
 8. Open F3 and check the HUD version string.
+
+Server (`./gradlew :server:runServer`, then connect from a Gaiden client to `localhost`):
+
+9. Two players each right-click a different anchor. Each should get "Spawn point set." and respawn at their own anchor.
+10. Restart the server and die again; each player's anchor should be kept (stored in `world/players/<name>.dat`).
+11. Break an anchor, then die; that player should respawn at world spawn and the anchor should be forgotten.
+12. Repeat checks 2, 3, 5 and 6 on the server.
