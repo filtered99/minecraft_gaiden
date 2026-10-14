@@ -6,7 +6,7 @@ and the status of each feature.
 
 ## Requirements
 
-- JDK 17 or newer to run Gradle (the mod itself compiles to Java 8 bytecode).
+- JDK 25 or newer to run Gradle; Loom 1.18 requires it (the mod itself compiles to Java 8 bytecode).
   Prism's bundled runtime works, for example:
   `JAVA_HOME=%APPDATA%\PrismLauncher\java\java-runtime-epsilon`
 - An Ornithe Gen2 Fabric `a1.2.6` instance in Prism Launcher (Fabric Loader 0.19.5,
