@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  push:
+    branches: [ "gen2/fabric" ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # Builds the client mod and the server mod. The singleplayer self test (:runSelfTest)
+      # needs a display, so it is run locally rather than here.
+      - name: Build
+        run: ./gradlew build
+
+      - name: Upload jars
+        uses: actions/upload-artifact@v4
+        with:
+          name: gaiden-jars
+          path: |
+            build/libs/*.jar
+            server/build/libs/*.jar
+          if-no-files-found: error

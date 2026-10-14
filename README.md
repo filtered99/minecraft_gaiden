@@ -20,6 +20,9 @@ and the status of each feature.
 
 The mod jar is written to `build/libs/gaiden-<version>+mca1.2.6.jar` (ignore the `-sources` jar).
 
+Every push to `gen2/fabric` and every pull request is also built by GitHub Actions; the jars are attached to each
+run under **Actions → Build** as the `gaiden-jars` artifact.
+
 ## Run in development
 
 ```sh
