@@ -1,0 +1,31 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "io.github.filtered99.gaiden.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+	],
+	"client": [
+		"BlockMixin",
+		"BoatEntityMixin",
+		"BookshelfBlockMixin",
+		"ClientPlayerEntityAccessor",
+		"CraftingManagerMixin",
+		"CrashReportPanelMixin",
+		"DoorItemMixin",
+		"FenceBlockMixin",
+		"FireBlockMixin",
+		"GameGuiMixin",
+		"GlassBlockMixin",
+		"GlowstoneBlockMixin",
+		"JoinMultiplayerScreenMixin",
+		"MinecraftMixin",
+		"SignItemMixin",
+		"StairsBlockMixin",
+		"TitleScreenMixin",
+		"WorldSaveConflictScreenMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

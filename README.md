@@ -1,31 +1,45 @@
-# Ornithe Template Mod
+# Minecraft Gaiden
 
-The official Ornithe template mod. You can use it as a template for your own mods!
+Gaiden Edition gameplay changes for Minecraft **Alpha 1.2.6**, packaged as an Ornithe (Gen2, Fabric Loader) mod.
+It is a port of the original RetroMCP implementation. See [MIGRATION.md](MIGRATION.md) for the feature list
+and the status of each feature.
 
-## Usage
+## Requirements
 
-In order to use this mod as a template:
+- JDK 17 or newer to run Gradle (the mod itself compiles to Java 8 bytecode).
+  Prism's bundled runtime works, for example:
+  `JAVA_HOME=%APPDATA%\PrismLauncher\java\java-runtime-epsilon`
+- An Ornithe Gen2 Fabric `a1.2.6` instance in Prism Launcher (Fabric Loader 0.19.5,
+  intermediary `calamus-intermediary-gen2:a1.2.6`).
 
-1. Create a new repository from this template with `Use this template`
-2. Clone the recently-created repo on your PC
-3. Make the necessary changes in order to make it yours:
-    - Update `gradle.properties` in order to use your 
-        - Update your mod's Maven group and mod ID
-            - If you don't know which Maven group to use, and you are planning to host the mod's source code on GitHub, use `io.github.<Your_Username_Here>`
-        - Update your mod's dependencies
-            - Check [our develop page](https://ornithemc.net/develop) for the latest available versions.
-    - Update `fabric.mod.json` in order to reflect your mod's metadata
-        - If you are planning to include (jar-in-jar) a mod, don't forget to declare its dependency on it!
-        - The icon provided here is a placeholder one. If you aren't able to replace it yet, you can delete it and remove the "icon" property
-    - Create a LICENSE file for this mod! If you don't know which license to use, check out [here](https://choosealicense.com/).
-        - If you use `LICENSE.md`, don't forget to update the buildscript in order to use that file name!
-        - In `fabric.mod.json`, don't forget to put the license's [SPDX identifier](https://spdx.org/licenses/) under the `"license"` property`.
-        - The GPLv3 and AGPLv3 are not valid mod licenses, so you can use almost any license except for those.
-    - Update the Java sub-directory structure so it reflects your Maven group
-4. The mod is now ready to be worked on!
+## Build
+
+```sh
+./gradlew build
+```
+
+The mod jar is written to `build/libs/gaiden-<version>+mca1.2.6.jar` (ignore the `-sources` jar).
+
+## Run in development
+
+```sh
+./gradlew runClient
+```
+
+## Install in Prism
+
+1. Build the mod.
+2. Copy `build/libs/gaiden-<version>+mca1.2.6.jar` into the instance's `minecraft/mods` folder
+   (Prism: right-click the instance > Folder > `minecraft/mods`, creating `mods` if needed).
+3. Launch the instance. The title screen should read "Gaiden Edition: Alpha v1.2.7".
+
+## Distribution
+
+The jar contains only Gaiden's own classes and its icon. It does not include Minecraft code or assets;
+players get the game from their own launcher. Distribute the mod jar only, never the game jar or
+decompiled Minecraft source.
 
 ## License
 
-This template on the OrnitheMC GitHub is licensed under the [Creative Common Zero v1.0 license](./LICENSE-TEMPLATE.md).
-
-Mods created with this template are not automatically licensed under the CC0, and are not required to give any kind of credit back to OrnitheMC for this template.
+The template's own license is in [LICENSE-TEMPLATE.md](LICENSE-TEMPLATE.md) and does not cover this mod.
+No license has been chosen for Gaiden yet.
