@@ -44,6 +44,28 @@ The Alpha multiplayer server (`a0.2.8`, which pairs with client `a1.2.6`) has it
 
 Players joining a Gaiden server need the Gaiden client mod as well.
 
+### Set up a server
+
+1. Download the [Ornithe installer](https://maven.ornithemc.net/releases/net/ornithemc/ornithe-installer/)
+   (tested with 0.16.0) and install a Fabric server for `a0.2.8`:
+
+   ```sh
+   java -jar ornithe-installer-0.16.0.jar install server a0.2.8 Fabric 0.19.5 --install-dir=<server folder> --download-server
+   ```
+
+   `--download-server` saves the vanilla server as `server.jar`. The installer gets it from Omniarchive, a
+   community archive; it is the same file Loom uses for development.
+2. Build the server mod and copy `server/build/libs/gaiden-server-<version>+mca0.2.8.jar` into
+   `<server folder>/mods` (create the folder if needed).
+3. Start the server from the server folder:
+
+   ```sh
+   java -Xms1024M -Xmx1024M -jar fabric-server-launch.jar nogui
+   ```
+
+   Java 8 or newer works. Type `stop` in the console to shut down and save. The installer's
+   `--create-scripts` option did not create any scripts in 0.16.0, so make your own start script if you want one.
+
 ## Distribution
 
 The jar contains only Gaiden's own classes and its icon. It does not include Minecraft code or assets;
