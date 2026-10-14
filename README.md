@@ -35,9 +35,11 @@ against the original values, run the development-only self test. It starts the g
 
 ## Install in Prism
 
-1. Build the mod.
-2. Copy `build/libs/gaiden-<version>+mca1.2.6.jar` into the instance's `minecraft/mods` folder
+1. Download `gaiden-<version>+mca1.2.6.jar` from the [releases](https://github.com/filtered99/minecraft_gaiden/releases),
+   or build it (`build/libs/`).
+2. Copy it into the instance's `minecraft/mods` folder
    (Prism: right-click the instance > Folder > `minecraft/mods`, creating `mods` if needed).
+   When updating, remove the old Gaiden jar first; two copies of the mod stop the game from starting.
 3. Launch the instance. The title screen should read "Gaiden Edition: Alpha v1.2.7".
 
 ## Server mod
@@ -62,9 +64,13 @@ Players joining a Gaiden server need the Gaiden client mod as well.
 
    `--download-server` saves the vanilla server as `server.jar`. The installer gets it from Omniarchive, a
    community archive; it is the same file Loom uses for development.
-2. Build the server mod and copy `server/build/libs/gaiden-server-<version>+mca0.2.8.jar` into
-   `<server folder>/mods` (create the folder if needed).
-3. Start the server from the server folder:
+2. Copy the server mod into `<server folder>/mods` (create the folder if needed). Download
+   `gaiden-server-<version>+mca0.2.8.jar` from the [releases](https://github.com/filtered99/minecraft_gaiden/releases), or
+   build it yourself (`server/build/libs/`).
+3. Start the server once so it creates `server.properties`, stop it, and set `online-mode=false`. Alpha servers check
+   logins against minecraft.net's old login service, which no longer exists, so with `online-mode=true` every player is
+   disconnected while logging in. With it off, the server doesn't verify player names, so only let people you trust reach it.
+4. Start the server from the server folder:
 
    ```sh
    java -Xms1024M -Xmx1024M -jar fabric-server-launch.jar nogui
