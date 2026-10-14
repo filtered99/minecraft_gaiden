@@ -15,6 +15,7 @@
 		"GlassBlockMixin",
 		"GlowstoneBlockMixin",
 		"LoginCheckThreadMixin",
+		"OverworldChunkGeneratorMixin",
 		"PlayerEntityMixin",
 		"PlayerManagerMixin",
 		"ServerLoginNetworkHandlerAccessor",

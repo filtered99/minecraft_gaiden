@@ -1,5 +1,6 @@
 package io.github.filtered99.gaiden.selftest;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Random;
 
@@ -11,6 +12,7 @@ import net.minecraft.block.FireBlock;
 import net.minecraft.crafting.CraftingManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 /**
  * Checks the singleplayer Gaiden changes against the values in the original RetroMCP source,
@@ -33,6 +35,7 @@ public final class GaidenSelfTest {
 		hardness();
 		spawnAnchor();
 		branding();
+		worldGen();
 		System.out.println("[Gaiden self test] " + passed + " passed, " + failed + " failed");
 		return failed == 0;
 	}
@@ -135,6 +138,102 @@ public final class GaidenSelfTest {
 		check("version is read from the mod metadata", GaidenVersion.VERSION.matches("[0-9]+(\\.[0-9]+)+"), GaidenVersion.VERSION);
 		check("title reads \"Gaiden Edition: Alpha v<version>\"", GaidenVersion.TITLE.equals("Gaiden Edition: Alpha v" + GaidenVersion.VERSION), GaidenVersion.TITLE);
 		System.out.println("[Gaiden self test] version " + GaidenVersion.VERSION);
+	}
+
+	// Generates a fresh world from a fixed seed and counts Gaiden's world features in a 128x128 area
+	private static void worldGen() {
+		File dir = new File("selftest-worlds");
+		deleteRecursively(new File(dir, "worldgen"));
+		World world = new World(dir, "worldgen", 20261014L);
+
+		// Pick a forested area that is mostly land: rank 8x8-chunk areas by forest biome (cheap, biome map only),
+		// then generate a few sample columns in the best candidates and keep the one with the most grass
+		java.util.List<int[]> candidates = new java.util.ArrayList<>();
+		for (int ax = -1500; ax <= 1500; ax += 128) {
+			for (int az = -1500; az <= 1500; az += 128) {
+				int forest = 0;
+				for (int cx = 0; cx < 8; cx++) {
+					for (int cz = 0; cz < 8; cz++) {
+						net.minecraft.world.biome.Biome b = world.getBiomeSource().getBiome(ax + cx * 16 + 16, az + cz * 16 + 16);
+						if (b == net.minecraft.world.biome.Biome.FOREST || b == net.minecraft.world.biome.Biome.SEASONAL_FOREST
+							|| b == net.minecraft.world.biome.Biome.RAINFOREST || b == net.minecraft.world.biome.Biome.TAIGA) {
+							forest++;
+						}
+					}
+				}
+				candidates.add(new int[]{forest, ax, az});
+			}
+		}
+		candidates.sort((p, q) -> q[0] - p[0]);
+		int bestX = 0, bestZ = 0, bestForest = 0, bestLand = -1;
+		for (int[] c : candidates.subList(0, Math.min(6, candidates.size()))) {
+			int land = 0;
+			for (int sx = 16; sx < 128; sx += 40) {
+				for (int sz = 16; sz < 128; sz += 40) {
+					int h = world.getHeight(c[1] + sx, c[2] + sz);
+					int top = world.getBlock(c[1] + sx, h - 1, c[2] + sz);
+					if (top == Block.GRASS.id || top == Block.LEAVES.id || top == Block.LOG.id) {
+						land++;
+					}
+				}
+			}
+			if (land > bestLand) {
+				bestLand = land;
+				bestForest = c[0];
+				bestX = c[1];
+				bestZ = c[2];
+			}
+		}
+
+		// Load every chunk in and around the area first: a chunk is only decorated once its +x/+z neighbours exist
+		for (int x = bestX - 32; x < bestX + 160; x += 16) {
+			for (int z = bestZ - 32; z < bestZ + 160; z += 16) {
+				world.getBlock(x, 64, z);
+			}
+		}
+
+		int obsidian = 0, boulderBlocks = 0, fallenLogs = 0, floatingLogs = 0, buriedBoulders = 0;
+		for (int x = bestX; x < bestX + 128; x++) {
+			for (int z = bestZ; z < bestZ + 128; z++) {
+				int top = world.getHeight(x, z);
+				for (int y = 1; y < 127; y++) {
+					int block = world.getBlock(x, y, z);
+					if (block == Block.OBSIDIAN.id) {
+						obsidian++;
+					} else if (block == Block.MOSSY_COBBLESTONE.id && y >= 56 && y >= top - 4) {
+						boulderBlocks++;
+					} else if (block == Block.MOSSY_COBBLESTONE.id && y >= 56 && world.getBlock(x, y + 1, z) == Block.STONE.id) {
+						buriedBoulders++;
+					} else if (block == Block.LOG.id) {
+						int above = world.getBlock(x, y + 1, z);
+						int below = world.getBlock(x, y - 1, z);
+						if (above != Block.LOG.id && above != Block.LEAVES.id && (below == Block.GRASS.id || below == Block.DIRT.id)) {
+							fallenLogs++;
+						} else if (below == 0) {
+							floatingLogs++;
+						}
+					}
+				}
+			}
+		}
+
+		System.out.println("[Gaiden self test] world gen (seed 20261014, 128x128 at " + bestX + "," + bestZ + ", " + bestForest + "/64 forest chunks): obsidian " + obsidian + ", surface boulder blocks "
+			+ boulderBlocks + ", fallen log blocks " + fallenLogs);
+		check("world gen: obsidian pockets generate underground", obsidian > 0, "" + obsidian);
+		check("world gen: boulders generate on the surface", boulderBlocks > 0, "" + boulderBlocks);
+		check("world gen: fallen logs generate on grass or dirt", fallenLogs > 0, "" + fallenLogs);
+		check("world gen: no floating logs", floatingLogs == 0, "" + floatingLogs);
+		deleteRecursively(new File(dir, "worldgen"));
+	}
+
+	private static void deleteRecursively(File file) {
+		File[] children = file.listFiles();
+		if (children != null) {
+			for (File child : children) {
+				deleteRecursively(child);
+			}
+		}
+		file.delete();
 	}
 
 	private static int[] grid(int... ids) {

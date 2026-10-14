@@ -24,6 +24,7 @@
 		"JoinMultiplayerScreenMixin",
 		"MinecraftMixin",
 		"ModelPartAccessor",
+		"OverworldChunkGeneratorMixin",
 		"PlayerRendererMixin",
 		"RemoteClientPlayerEntitySkinMixin",
 		"SignItemMixin",
