@@ -75,7 +75,14 @@ Gradle subproject builds `gaiden-server-<version>+mca0.2.8.jar` against it:
 - The client and server mods are separate source trees, like the two RetroMCP projects. A fix to a shared
   block or item change has to be made in both.
 
-Players joining a Gaiden server need the Gaiden client mod as well. The server sends block id 92, which a
+Players joining a Gaiden server need the Gaiden client mod as well.
+
+Respawn height fix: the RetroMCP server placed a respawning player flush on top of the anchor
+(`anchorY + 1`). In multiplayer this left the client stuck. After a respawn the server sends terrain only
+for movement it has accepted, so a player standing exactly on the block's top surface collided before the
+terrain arrived. The port now places the player 1.62 above the anchor, the same height the vanilla server
+uses for a normal respawn. Singleplayer is unchanged. There the client pushes the player out of the anchor
+block onto its top, as vanilla does for any spawn, with no server round trip involved. The server sends block id 92, which a
 vanilla client doesn't have.
 
 ## In-game test plan (not yet run)

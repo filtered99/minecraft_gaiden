@@ -30,9 +30,11 @@ public abstract class PlayerManagerMixin {
 
 		if (anchor.gaiden$hasSpawnAnchor()
 			&& this.server.world.getBlock(anchor.gaiden$getSpawnAnchorX(), anchor.gaiden$getSpawnAnchorY(), anchor.gaiden$getSpawnAnchorZ()) == GaidenBlocks.SPAWN_ANCHOR.id) {
+			// Vanilla places respawning players 1.62 above the ground (the player constructor applies the
+			// eye height before zeroing it). Respawning flush with the anchor's top left the client stuck.
 			newPlayer.setPositionAndAngles(
 				(double) anchor.gaiden$getSpawnAnchorX() + 0.5D,
-				(double) (anchor.gaiden$getSpawnAnchorY() + 1),
+				(double) (anchor.gaiden$getSpawnAnchorY() + 1) + 1.62F,
 				(double) anchor.gaiden$getSpawnAnchorZ() + 0.5D,
 				0.0F,
 				0.0F
