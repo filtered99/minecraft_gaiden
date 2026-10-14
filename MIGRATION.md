@@ -85,6 +85,21 @@ uses for a normal respawn. Singleplayer is unchanged. There the client pushes th
 block onto its top, as vanilla does for any spawn, with no server round trip involved. The server sends block id 92, which a
 vanilla client doesn't have.
 
+## Added after the port: Minecraft account skins
+
+This is a new feature, not part of the RetroMCP original. It is client-only (`skin/` plus the skin mixins).
+Prism's Microsoft sign-in is reused; the mod reads only the profile id from the session and never the access token.
+
+| Part | Status |
+|---|---|
+| Signed-in player's skin from the Microsoft account session | **Verified (runtime)**, 2026-10-14, in Prism: the profile id came from the session (no name lookup), and the signed skin was downloaded and shown on the first-person arm |
+| Other players' skins looked up by name | **Verified (runtime)**, 2026-10-14, on the Gaiden server: a player named `jeb_` was looked up by name and shown with their skin |
+| Profile signature check, `textures.minecraft.net` only, image validation, disk cache, legacy 64x32 conversion | Verified outside the game against the live Mojang services (21/21 checks, including a forged profile being rejected) |
+| Default-skin fallback when there is no Microsoft session | Applied (runtime): the dev launch logged the fallback; not looked at in-game |
+| Slim (Alex) arms | Untested: no account with a slim skin was available |
+| Outer layers (jacket, sleeves, pants) checked specifically | Untested |
+| Behaviour during a network outage while playing | Untested (cached skins and the default skin are used on failure) |
+
 ## In-game test plan
 
 Steps 1–8 have not been run yet. On the server, the single-player parts of steps 9 and 10 passed on 2026-10-14; step 11 and the two-player part of step 9 have not been run yet.
