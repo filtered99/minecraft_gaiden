@@ -38,7 +38,7 @@ Status key:
 | 1b | HUD / F3 text "Gaiden Edition Alpha v1.2.7" | `GuiIngame` | `GameGuiMixin` | **Verified (runtime)**, 2026-10-14, played in singleplayer: the HUD and F3 screens read "Gaiden Edition Alpha v1.2.7" |
 | 1c | Crash screen text | `PanelCrashReport` | `CrashReportPanelMixin` | Applied (runtime) |
 | 1d | Save-conflict and multiplayer screen text | `GuiConflictWarning`, `GuiMultiplayer` | `WorldSaveConflictScreenMixin`, `JoinMultiplayerScreenMixin` | Applied (runtime) |
-| 1e | Window title "Gaiden Edition: Alpha v1.2.7"; standalone frame "Gaiden Edition" | `Minecraft.startGame`, `Minecraft.func_6253_a` | `MinecraftMixin` | **Partial**: mixin applies, but the dev launch window still shows "Minecraft" (the game is embedded in the launcher's frame, so `Display.setTitle` is not visible). Behaviour in Prism is untested. |
+| 1e | Window title "Gaiden Edition: Alpha v1.2.7"; standalone frame "Gaiden Edition" | `Minecraft.startGame`, `Minecraft.func_6253_a` | `MinecraftMixin` | **Verified (runtime)**, 2026-10-14, in Prism (Gaiden-main) and the dev client: the window reads "Gaiden Edition: Alpha v1.2.8". Fabric Loader's applet window is titled "Minecraft" and `Display.setTitle` has no effect inside it, so `MinecraftMixin` renames the window holding the game canvas. |
 | 2 | Recipe outputs: book 2, fence 3, bookshelf 2, slab 6, wood/cobble stairs 6, ladder 3, wood/iron door 3, sign 3 | `CraftingManager` | `CraftingManagerMixin` | **Verified (self test)**, 2026-10-14: all ten outputs |
 | 3 | Cheaper recipes: glowstone 2×2, wool 2×2, button = 1 stone, pressure plates = 2 | `CraftingManager` | `CraftingManagerMixin` | **Verified (self test)**, 2026-10-14: new patterns craft, old patterns no longer do |
 | 4 | Reverse recipes: snow block → 4 snowballs, clay block → 4 clay, brick block → 4 bricks | `CraftingManager` | `CraftingManagerMixin` (same pre-sort position as the original) | **Verified (self test)**, 2026-10-14 |
@@ -59,6 +59,9 @@ Status key:
 | S3 | **Server:** recipe changes | — | — | Not applicable: the RetroMCP server never had them, so the server port doesn't add them either |
 
 Not features: `.idea`/`.iml` changes, `minecraft_server/game/ops.txt` (runtime file), and the removed world save files.
+
+Branding version: since 1.2.8 the in-game version text (title screen, HUD, F3, crash report, window) comes from the
+mod version in `gradle.properties` via `GaidenVersion`, instead of being hard-coded as v1.2.7.
 
 Note on #10: `FireBlock` is built partway through `Block`'s static initializer, before fences, doors and the other
 blocks exist. That is why the original used raw ids (see the RetroMCP commit "Fix fire block initialization crash").

@@ -43,7 +43,7 @@ against the original values, run the development-only self test. It starts the g
 2. Copy it into the instance's `minecraft/mods` folder
    (Prism: right-click the instance > Folder > `minecraft/mods`, creating `mods` if needed).
    When updating, remove the old Gaiden jar first; two copies of the mod stop the game from starting.
-3. Launch the instance. The title screen should read "Gaiden Edition: Alpha v1.2.7".
+3. Launch the instance. The title screen should read "Gaiden Edition: Alpha v<version>".
 
 ## Server mod
 

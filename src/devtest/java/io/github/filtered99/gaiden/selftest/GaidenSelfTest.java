@@ -3,6 +3,7 @@ package io.github.filtered99.gaiden.selftest;
 import java.lang.reflect.Field;
 import java.util.Random;
 
+import io.github.filtered99.gaiden.GaidenVersion;
 import io.github.filtered99.gaiden.block.SpawnAnchorBlock;
 
 import net.minecraft.block.Block;
@@ -31,6 +32,7 @@ public final class GaidenSelfTest {
 		flammability();
 		hardness();
 		spawnAnchor();
+		branding();
 		System.out.println("[Gaiden self test] " + passed + " passed, " + failed + " failed");
 		return failed == 0;
 	}
@@ -127,6 +129,12 @@ public final class GaidenSelfTest {
 		check("spawn anchor hardness is 10", floatField(anchor, "miningTime") == 10.0F, "" + floatField(anchor, "miningTime"));
 		check("spawn anchor blast resistance is 2000 * 3", floatField(anchor, "blastResistance") == 6000.0F, "" + floatField(anchor, "blastResistance"));
 		check("spawn anchor uses stone sounds", anchor.sounds == Block.STONE_SOUNDS, String.valueOf(anchor.sounds));
+	}
+
+	private static void branding() {
+		check("version is read from the mod metadata", GaidenVersion.VERSION.matches("[0-9]+(\\.[0-9]+)+"), GaidenVersion.VERSION);
+		check("title reads \"Gaiden Edition: Alpha v<version>\"", GaidenVersion.TITLE.equals("Gaiden Edition: Alpha v" + GaidenVersion.VERSION), GaidenVersion.TITLE);
+		System.out.println("[Gaiden self test] version " + GaidenVersion.VERSION);
 	}
 
 	private static int[] grid(int... ids) {
