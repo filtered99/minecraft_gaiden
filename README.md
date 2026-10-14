@@ -26,6 +26,13 @@ The mod jar is written to `build/libs/gaiden-<version>+mca1.2.6.jar` (ignore the
 ./gradlew :runClient
 ```
 
+To check the singleplayer Gaiden changes (recipes, drops, stack sizes, flammability, hardness, spawn anchor)
+against the original values, run the development-only self test. It starts the game, prints the results and exits:
+
+```sh
+./gradlew :runSelfTest
+```
+
 ## Install in Prism
 
 1. Build the mod.

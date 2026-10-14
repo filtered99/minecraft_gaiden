@@ -26,6 +26,34 @@ dependencies {
 	mappings ploceus.featherMappings(project.feather_build)
 }
 
+// Development-only self test (src/devtest): run with ./gradlew :runSelfTest. Not part of the mod jar.
+sourceSets {
+	devtest {
+		compileClasspath += main.compileClasspath + main.output
+		runtimeClasspath += main.runtimeClasspath + main.output
+	}
+}
+
+loom {
+	mods {
+		gaiden {
+			sourceSet sourceSets.main
+		}
+		gaiden_selftest {
+			sourceSet sourceSets.devtest
+		}
+	}
+
+	runs {
+		selfTest {
+			client()
+			name = "Self Test"
+			source sourceSets.devtest
+			runDir = "run/selftest"
+		}
+	}
+}
+
 processResources {
 	inputs.property 'version', version
 

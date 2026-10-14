@@ -1,0 +1,13 @@
+{
+	"schemaVersion": 1,
+	"id": "gaiden_selftest",
+	"version": "1.0.0",
+	"name": "Gaiden Self Test (development only)",
+	"environment": "client",
+	"mixins": [
+		"gaiden_selftest.mixins.json"
+	],
+	"depends": {
+		"gaiden": "*"
+	}
+}
