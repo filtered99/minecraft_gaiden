@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 1,
+	"id": "gaiden",
+	"version": "${version}",
+	"name": "Minecraft Gaiden (Server)",
+	"description": "Gaiden Edition gameplay changes for the Minecraft Alpha server a0.2.8 (pairs with client a1.2.6).",
+	"authors": [
+		"Vindew"
+	],
+	"contact": {
+		"sources": "https://github.com/filtered99/minecraft_gaiden"
+	},
+	"environment": "server",
+	"mixins": [
+		"gaiden-server.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.17.3",
+		"minecraft": "1.0.0-alpha.2.8"
+	}
+}

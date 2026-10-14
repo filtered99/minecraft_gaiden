@@ -33,6 +33,17 @@ The mod jar is written to `build/libs/gaiden-<version>+mca1.2.6.jar` (ignore the
    (Prism: right-click the instance > Folder > `minecraft/mods`, creating `mods` if needed).
 3. Launch the instance. The title screen should read "Gaiden Edition: Alpha v1.2.7".
 
+## Server mod
+
+The Alpha multiplayer server (`a0.2.8`, which pairs with client `a1.2.6`) has its own mod in `server/`:
+
+```sh
+./gradlew :server:build      # writes server/build/libs/gaiden-server-<version>+mca0.2.8.jar
+./gradlew :server:runServer  # development server
+```
+
+Players joining a Gaiden server need the Gaiden client mod as well.
+
 ## Distribution
 
 The jar contains only Gaiden's own classes and its icon. It does not include Minecraft code or assets;

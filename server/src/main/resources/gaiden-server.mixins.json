@@ -1,0 +1,27 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "io.github.filtered99.gaiden.server.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+	],
+	"client": [
+	],
+	"server": [
+		"BlockMixin",
+		"BoatEntityMixin",
+		"BookshelfBlockMixin",
+		"DoorItemMixin",
+		"FenceBlockMixin",
+		"FireBlockMixin",
+		"GlassBlockMixin",
+		"GlowstoneBlockMixin",
+		"PlayerEntityMixin",
+		"PlayerManagerMixin",
+		"SignItemMixin",
+		"StairsBlockMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
