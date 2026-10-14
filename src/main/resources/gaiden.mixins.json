@@ -6,6 +6,7 @@
 	"mixins": [],
 	"client": [
 		"BlockMixin",
+		"BlockRendererMixin",
 		"BoatEntityMixin",
 		"BookshelfBlockMixin",
 		"ClientNetworkHandlerMixin",
@@ -22,6 +23,7 @@
 		"HttpTextureDownloadMixin",
 		"ItemInHandRendererMixin",
 		"JoinMultiplayerScreenMixin",
+		"LogBlockMixin",
 		"MinecraftMixin",
 		"ModelPartAccessor",
 		"OverworldChunkGeneratorMixin",

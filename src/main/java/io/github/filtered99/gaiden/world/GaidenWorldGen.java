@@ -32,9 +32,9 @@ public final class GaidenWorldGen {
 		fallenLog(world, random, x0, z0, forest);
 	}
 
-	// About one small obsidian vein every three chunks, deep underground (y 4-31), replacing stone like an ore
+	// About one small obsidian vein every five chunks, deep underground (y 4-31), replacing stone like an ore
 	private static void obsidianPocket(World world, Random random, int x0, int z0) {
-		if (random.nextInt(3) != 0) {
+		if (random.nextInt(5) != 0) {
 			return;
 		}
 
@@ -44,7 +44,7 @@ public final class GaidenWorldGen {
 		new VeinFeature(Block.OBSIDIAN.id, 8).place(world, random, x, y, z);
 	}
 
-	// A mossy cobblestone boulder, partly sunk into the ground: one in three forest chunks, one in five chunks on hills
+	// A mossy cobblestone boulder, partly sunk into the ground: about one in eight forest chunks, one in fifteen on hills
 	private static void boulder(World world, Random random, int x0, int z0, boolean forest) {
 		int roll = random.nextInt(15);
 		int cx = x0 + 11 + random.nextInt(10);
@@ -52,7 +52,7 @@ public final class GaidenWorldGen {
 		int radius = 1 + random.nextInt(2);
 		int y = world.getHeight(cx, cz);
 		boolean hill = y > 80;
-		if (!(forest && roll < 5 || hill && roll < 3)) {
+		if (!(forest && roll < 2 || hill && roll < 1)) {
 			return;
 		}
 		if (!isGround(world.getBlock(cx, y - 1, cz))) {
@@ -79,9 +79,9 @@ public final class GaidenWorldGen {
 		}
 	}
 
-	// A log lying on flat ground (grass or dirt under every block), 3-5 blocks long, in one of three forest chunks
+	// A log lying on flat ground (grass or dirt under every block), 3-5 blocks long, in one of six forest chunks
 	private static void fallenLog(World world, Random random, int x0, int z0, boolean forest) {
-		int roll = random.nextInt(3);
+		int roll = random.nextInt(6);
 		int length = 3 + random.nextInt(3);
 		boolean alongX = random.nextBoolean();
 		int sx = x0 + 9 + random.nextInt(14 - length);
@@ -102,7 +102,8 @@ public final class GaidenWorldGen {
 		}
 
 		for (int i = 0; i < length; i++) {
-			world.setBlockQuietly(alongX ? sx + i : sx, y, alongX ? sz : sz + i, Block.LOG.id);
+			// Metadata 4 = lying east-west, 8 = north-south (see LogAxis)
+			world.setBlockWithMetadataQuietly(alongX ? sx + i : sx, y, alongX ? sz : sz + i, Block.LOG.id, alongX ? 4 : 8);
 		}
 	}
 

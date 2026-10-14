@@ -14,6 +14,7 @@
 		"FireBlockMixin",
 		"GlassBlockMixin",
 		"GlowstoneBlockMixin",
+		"LogBlockMixin",
 		"LoginCheckThreadMixin",
 		"OverworldChunkGeneratorMixin",
 		"PlayerEntityMixin",

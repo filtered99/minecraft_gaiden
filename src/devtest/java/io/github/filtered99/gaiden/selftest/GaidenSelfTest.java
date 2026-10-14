@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.Random;
 
 import io.github.filtered99.gaiden.GaidenVersion;
+import io.github.filtered99.gaiden.block.LogAxis;
 import io.github.filtered99.gaiden.block.SpawnAnchorBlock;
 
 import net.minecraft.block.Block;
@@ -35,6 +36,7 @@ public final class GaidenSelfTest {
 		hardness();
 		spawnAnchor();
 		branding();
+		logs();
 		worldGen();
 		System.out.println("[Gaiden self test] " + passed + " passed, " + failed + " failed");
 		return failed == 0;
@@ -140,6 +142,26 @@ public final class GaidenSelfTest {
 		System.out.println("[Gaiden self test] version " + GaidenVersion.VERSION);
 	}
 
+	private static void logs() {
+		int[][] cases = {
+			{LogAxis.Y, 21, 21, 20, 20, 20, 20},
+			{LogAxis.X, 20, 20, 20, 20, 21, 21},
+			{LogAxis.Z, 20, 20, 21, 21, 20, 20},
+		};
+		for (int[] c : cases) {
+			StringBuilder got = new StringBuilder();
+			boolean ok = true;
+			for (int face = 0; face < 6; face++) {
+				int sprite = Block.LOG.getSprite(face, c[0]);
+				got.append(sprite).append(face < 5 ? "," : "");
+				ok &= sprite == c[face + 1];
+			}
+			check("log direction " + c[0] + " has rings on its end faces", ok, got.toString());
+		}
+		check("old logs (metadata 0) stay upright", Block.LOG.getSprite(1, 0) == 21 && Block.LOG.getSprite(2, 0) == 20, "");
+		check("log item still shows an upright log", Block.LOG.getSprite(1) == 21 && Block.LOG.getSprite(2) == 20, "");
+	}
+
 	// Generates a fresh world from a fixed seed and counts Gaiden's world features in a 128x128 area
 	private static void worldGen() {
 		File dir = new File("selftest-worlds");
@@ -149,11 +171,11 @@ public final class GaidenSelfTest {
 		// Pick a forested area that is mostly land: rank 8x8-chunk areas by forest biome (cheap, biome map only),
 		// then generate a few sample columns in the best candidates and keep the one with the most grass
 		java.util.List<int[]> candidates = new java.util.ArrayList<>();
-		for (int ax = -1500; ax <= 1500; ax += 128) {
-			for (int az = -1500; az <= 1500; az += 128) {
+		for (int ax = -1536; ax <= 1536; ax += 256) {
+			for (int az = -1536; az <= 1536; az += 256) {
 				int forest = 0;
-				for (int cx = 0; cx < 8; cx++) {
-					for (int cz = 0; cz < 8; cz++) {
+				for (int cx = 0; cx < 16; cx++) {
+					for (int cz = 0; cz < 16; cz++) {
 						net.minecraft.world.biome.Biome b = world.getBiomeSource().getBiome(ax + cx * 16 + 16, az + cz * 16 + 16);
 						if (b == net.minecraft.world.biome.Biome.FOREST || b == net.minecraft.world.biome.Biome.SEASONAL_FOREST
 							|| b == net.minecraft.world.biome.Biome.RAINFOREST || b == net.minecraft.world.biome.Biome.TAIGA) {
@@ -168,8 +190,8 @@ public final class GaidenSelfTest {
 		int bestX = 0, bestZ = 0, bestForest = 0, bestLand = -1;
 		for (int[] c : candidates.subList(0, Math.min(6, candidates.size()))) {
 			int land = 0;
-			for (int sx = 16; sx < 128; sx += 40) {
-				for (int sz = 16; sz < 128; sz += 40) {
+			for (int sx = 16; sx < 256; sx += 60) {
+				for (int sz = 16; sz < 256; sz += 60) {
 					int h = world.getHeight(c[1] + sx, c[2] + sz);
 					int top = world.getBlock(c[1] + sx, h - 1, c[2] + sz);
 					if (top == Block.GRASS.id || top == Block.LEAVES.id || top == Block.LOG.id) {
@@ -186,15 +208,15 @@ public final class GaidenSelfTest {
 		}
 
 		// Load every chunk in and around the area first: a chunk is only decorated once its +x/+z neighbours exist
-		for (int x = bestX - 32; x < bestX + 160; x += 16) {
-			for (int z = bestZ - 32; z < bestZ + 160; z += 16) {
+		for (int x = bestX - 32; x < bestX + 288; x += 16) {
+			for (int z = bestZ - 32; z < bestZ + 288; z += 16) {
 				world.getBlock(x, 64, z);
 			}
 		}
 
-		int obsidian = 0, boulderBlocks = 0, fallenLogs = 0, floatingLogs = 0, buriedBoulders = 0;
-		for (int x = bestX; x < bestX + 128; x++) {
-			for (int z = bestZ; z < bestZ + 128; z++) {
+		int obsidian = 0, boulderBlocks = 0, fallenLogs = 0, floatingLogs = 0, buriedBoulders = 0, misalignedLogs = 0;
+		for (int x = bestX; x < bestX + 256; x++) {
+			for (int z = bestZ; z < bestZ + 256; z++) {
 				int top = world.getHeight(x, z);
 				for (int y = 1; y < 127; y++) {
 					int block = world.getBlock(x, y, z);
@@ -209,7 +231,15 @@ public final class GaidenSelfTest {
 						int below = world.getBlock(x, y - 1, z);
 						if (above != Block.LOG.id && above != Block.LEAVES.id && (below == Block.GRASS.id || below == Block.DIRT.id)) {
 							fallenLogs++;
-						} else if (below == 0) {
+							int axis = LogAxis.of(world.getBlockMetadata(x, y, z));
+							int dx = axis == LogAxis.X ? 1 : 0, dz = axis == LogAxis.Z ? 1 : 0;
+							boolean alongAxis = axis != LogAxis.Y
+								&& (world.getBlock(x + dx, y, z + dz) == Block.LOG.id || world.getBlock(x - dx, y, z - dz) == Block.LOG.id);
+							if (!alongAxis) {
+								misalignedLogs++;
+							}
+						} else if (below == 0 && LogAxis.of(world.getBlockMetadata(x, y, z)) != LogAxis.Y) {
+							// Vanilla big oak branches float too, but only Gaiden's fallen logs are horizontal
 							floatingLogs++;
 						}
 					}
@@ -217,12 +247,24 @@ public final class GaidenSelfTest {
 			}
 		}
 
-		System.out.println("[Gaiden self test] world gen (seed 20261014, 128x128 at " + bestX + "," + bestZ + ", " + bestForest + "/64 forest chunks): obsidian " + obsidian + ", surface boulder blocks "
+		System.out.println("[Gaiden self test] world gen (seed 20261014, 256x256 at " + bestX + "," + bestZ + ", " + bestForest + "/256 forest chunks): obsidian " + obsidian + ", surface boulder blocks "
 			+ boulderBlocks + ", fallen log blocks " + fallenLogs);
 		check("world gen: obsidian pockets generate underground", obsidian > 0, "" + obsidian);
 		check("world gen: boulders generate on the surface", boulderBlocks > 0, "" + boulderBlocks);
 		check("world gen: fallen logs generate on grass or dirt", fallenLogs > 0, "" + fallenLogs);
-		check("world gen: no floating logs", floatingLogs == 0, "" + floatingLogs);
+		check("world gen: no floating fallen logs", floatingLogs == 0, "" + floatingLogs);
+		check("world gen: fallen logs lie along their own direction", misalignedLogs == 0, "" + misalignedLogs);
+
+		// Placing a log against each face sets its direction
+		int px = bestX + 128, pz = bestZ + 128, py = 120;
+		int[][] faces = {{1, LogAxis.Y}, {0, LogAxis.Y}, {2, LogAxis.Z}, {3, LogAxis.Z}, {4, LogAxis.X}, {5, LogAxis.X}};
+		for (int[] f : faces) {
+			world.setBlock(px, py, pz, Block.LOG.id);
+			Block.LOG.updateMetadataOnPlaced(world, px, py, pz, f[0]);
+			int got = LogAxis.of(world.getBlockMetadata(px, py, pz));
+			check("log placed against face " + f[0] + " gets direction " + f[1], got == f[1], "" + got);
+		}
+		world.setBlock(px, py, pz, 0);
 		deleteRecursively(new File(dir, "worldgen"));
 	}
 
