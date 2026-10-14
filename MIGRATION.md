@@ -35,7 +35,7 @@ Status key:
 | # | Feature (original behaviour) | RetroMCP source | Ornithe implementation | Status |
 |---|---|---|---|---|
 | 1a | Title screen: "Gaiden Edition: Alpha v1.2.7" and footer "Gaiden Edition - Unofficial Minecraft project." | `GuiMainMenu.drawScreen` | `TitleScreenMixin` | **Verified (runtime)** (screenshot) |
-| 1b | HUD / F3 text "Gaiden Edition Alpha v1.2.7" | `GuiIngame` | `GameGuiMixin` | Applied (runtime) |
+| 1b | HUD / F3 text "Gaiden Edition Alpha v1.2.7" | `GuiIngame` | `GameGuiMixin` | **Verified (runtime)**, 2026-10-14, played in singleplayer: the HUD and F3 screens read "Gaiden Edition Alpha v1.2.7" |
 | 1c | Crash screen text | `PanelCrashReport` | `CrashReportPanelMixin` | Applied (runtime) |
 | 1d | Save-conflict and multiplayer screen text | `GuiConflictWarning`, `GuiMultiplayer` | `WorldSaveConflictScreenMixin`, `JoinMultiplayerScreenMixin` | Applied (runtime) |
 | 1e | Window title "Gaiden Edition: Alpha v1.2.7"; standalone frame "Gaiden Edition" | `Minecraft.startGame`, `Minecraft.func_6253_a` | `MinecraftMixin` | **Partial**: mixin applies, but the dev launch window still shows "Minecraft" (the game is embedded in the launcher's frame, so `Display.setTitle` is not visible). Behaviour in Prism is untested. |
@@ -45,15 +45,15 @@ Status key:
 | 5 | Glass and bookshelves drop themselves | `BlockGlass`, `BlockBookshelf` | `GlassBlockMixin`, `BookshelfBlockMixin` | **Verified (self test)**, 2026-10-14 |
 | 6 | Glowstone drops 4 dust | `BlockLightStone` | `GlowstoneBlockMixin` | **Verified (self test)**, 2026-10-14 |
 | 7 | Stairs drop themselves | `BlockStairs` | `StairsBlockMixin` | **Verified (self test)**, 2026-10-14: oak and cobblestone stairs |
-| 8 | A boat broken by hand drops a boat | `EntityBoat.attackEntityFrom` | `BoatEntityMixin` | Applied (runtime) |
+| 8 | A boat broken by hand drops a boat | `EntityBoat.attackEntityFrom` | `BoatEntityMixin` | **Verified (runtime)**, 2026-10-14, played in singleplayer: a boat broken by hand drops a boat |
 | 9 | Doors and signs stack to 16 | `ItemDoor`, `ItemSign` | `DoorItemMixin`, `SignItemMixin` | **Verified (self test)**, 2026-10-14: wooden doors, iron doors and signs |
-| 10 | Wooden stairs, fence, wooden door, workbench, chest, signs, ladder and wooden pressure plate burn (5, 20) | `BlockFire` constructor (raw ids, see note) | `FireBlockMixin` | **Verified (self test)**, 2026-10-14: all nine blocks have flammability (5, 20). Fire actually spreading has not been played |
-| 11 | Fences can stack vertically | `BlockFence.canPlaceBlockAt` | `FenceBlockMixin` | Applied (runtime) |
+| 10 | Wooden stairs, fence, wooden door, workbench, chest, signs, ladder and wooden pressure plate burn (5, 20) | `BlockFire` constructor (raw ids, see note) | `FireBlockMixin` | **Verified (self test + runtime)**, 2026-10-14: all nine blocks have flammability (5, 20), and fire was seen spreading to and burning them in singleplayer |
+| 11 | Fences can stack vertically | `BlockFence.canPlaceBlockAt` | `FenceBlockMixin` | **Verified (runtime)**, 2026-10-14, played in singleplayer: a fence can be placed on a fence |
 | 12 | Obsidian hardness 10 → 5 | `Block` static init | `BlockMixin` (`@ModifyConstant` sliced after `new ObsidianBlock`) | **Verified (self test)**, 2026-10-14: hardness 5, blast resistance unchanged |
 | 13a | Spawn anchor block, id 92, obsidian sprite, hardness 10, resistance 2000 | `BlockSpawnAnchor`, `Block` | `SpawnAnchorBlock`, `GaidenBlocks`, `BlockMixin` | **Verified (self test)**, 2026-10-14: id 92, block item, obsidian sprite, hardness 10, resistance 6000, stone sounds |
 | 13b | Spawn anchor recipe: 8 obsidian around a compass | `CraftingManager` | `CraftingManagerMixin` | **Verified (self test)**, 2026-10-14 |
-| 13c | Singleplayer use: sets the **world** spawn and shows "Spawn point set." in chat | `BlockSpawnAnchor.blockActivated`, `EntityPlayer`/`EntityPlayerSP.addChatMessage` | `SpawnAnchorBlock.use` + `ClientPlayerEntityAccessor` (chat goes to the same `GameGui.addChatMessage`) | Compiled only |
-| 13d | Portal particles above the anchor (was uncommitted in RetroMCP) | `BlockSpawnAnchor.randomDisplayTick` | `SpawnAnchorBlock.randomDisplayTick` | Compiled only |
+| 13c | Singleplayer use: sets the **world** spawn and shows "Spawn point set." in chat | `BlockSpawnAnchor.blockActivated`, `EntityPlayer`/`EntityPlayerSP.addChatMessage` | `SpawnAnchorBlock.use` + `ClientPlayerEntityAccessor` (chat goes to the same `GameGui.addChatMessage`) | **Verified (runtime)**, 2026-10-14, played in singleplayer: right-clicking shows "Spawn point set.", the player respawns on the anchor, and this survives saving and reloading the world |
+| 13d | Portal particles above the anchor (was uncommitted in RetroMCP) | `BlockSpawnAnchor.randomDisplayTick` | `SpawnAnchorBlock.randomDisplayTick` | **Verified (runtime)**, 2026-10-14, played in singleplayer: portal particles appear above the anchor |
 | S1 | **Server:** per-player spawn anchor, saved to player NBT (`HasSpawnAnchor`, `SpawnAnchorX/Y/Z`) and used on respawn if the block still exists; "Spawn point set." is sent as a chat packet | `minecraft_server`: `BlockSpawnAnchor`, `EntityPlayer`, `ServerConfigurationManager.recreatePlayerEntity` | `server/`: `SpawnAnchorBlock`, `SpawnAnchorHolder`, `PlayerEntityMixin` (fields + NBT), `PlayerManagerMixin` (respawn, via MixinExtras `@ModifyExpressionValue`) | **Verified (runtime)**, 2026-10-14, on the Ornithe server install with the Prism client: right-clicking sets the anchor and shows "Spawn point set."; the anchor is saved to the player file and kept across a server restart; the player respawns on the anchor and can walk off (after the respawn-height fix below). Also verified 2026-10-14 with two scripted test clients: two players with different anchors each respawn at their own; a broken anchor drops itself, the player then respawns at world spawn, and the anchor is cleared from their saved data while the other player keeps theirs. Breaking an anchor takes about 17 s with a diamond pickaxe (hardness 10 and not a pickaxe-effective block, as in the original). |
 | S2 | **Server:** copies of features 5–12 and the spawn anchor block (id 92) | `minecraft_server/src` | `server/` (same Feather names as the client, so these mirror the client mixins) | **Verified (runtime)**, 2026-10-14, with scripted test clients: glass, bookshelf, oak and cobblestone stairs drop themselves; glowstone drops 4 dust; a fence can be placed on a fence; the anchor block places, works and drops itself. **Untested on the server:** doors and signs stacking to 16, fire spreading to the wooden blocks, boat drops, obsidian mining speed (the server lets the client decide when mining finishes). |
 | S3 | **Server:** recipe changes | — | — | Not applicable: the RetroMCP server never had them, so the server port doesn't add them either |
@@ -104,7 +104,7 @@ Prism's Microsoft sign-in is reused; the mod reads only the profile id from the 
 
 ## In-game test plan
 
-In singleplayer, the data behind steps 1–4 and 6 is covered by the self test (55/55 passed on 2026-10-14); fire spreading, the boat drop, fence stacking (5), the spawn anchor (7) and the F3 text (8) still need to be played. On the server, steps 9–11 passed on 2026-10-14, and step 12 passed for drops (2) and fence stacking (5); stacking (3) and obsidian mining speed (6) were not covered.
+In singleplayer, steps 1–8 are covered: the data by the self test (55/55 on 2026-10-14) and the gameplay (fire, boat, fence stacking, spawn anchor with save/reload, F3 text) by a play session the same day.
 
 Use a fresh singleplayer world in the Prism instance (or `runClient`):
 
