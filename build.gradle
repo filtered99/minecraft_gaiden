@@ -22,12 +22,8 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	exceptions ploceus.raven(project.raven_build)
-	signatures ploceus.sparrow(project.sparrow_build)
-	nests ploceus.nests(project.nests_build)
+	// raven/sparrow/nests and OSL are not published for a1.2.6
 	mappings ploceus.featherMappings(project.feather_build)
-
-	ploceus.dependOsl(project.osl_version)
 }
 
 processResources {
