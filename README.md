@@ -51,7 +51,8 @@ The Alpha multiplayer server (`a0.2.8`, which pairs with client `a1.2.6`) has it
 ./gradlew :server:runServer  # development server
 ```
 
-Players joining a Gaiden server need the Gaiden client mod as well.
+Players joining a Gaiden server need the Gaiden client mod as well, and a Microsoft account signed in through their
+launcher if the server uses online mode.
 
 ### Set up a server
 
@@ -67,9 +68,9 @@ Players joining a Gaiden server need the Gaiden client mod as well.
 2. Copy the server mod into `<server folder>/mods` (create the folder if needed). Download
    `gaiden-server-<version>+mca0.2.8.jar` from the [releases](https://github.com/filtered99/minecraft_gaiden/releases), or
    build it yourself (`server/build/libs/`).
-3. Start the server once so it creates `server.properties`, stop it, and set `online-mode=false`. Alpha servers check
-   logins against minecraft.net's old login service, which no longer exists, so with `online-mode=true` every player is
-   disconnected while logging in. With it off, the server doesn't verify player names, so only let people you trust reach it.
+3. Keep `online-mode=true` in `server.properties` (the default). Gaiden verifies every player with Mojang's session
+   server, so players need the Gaiden client mod and a Microsoft account signed in through their launcher.
+   `online-mode=false` lets anyone join under any name; only use it for a private server with people you trust.
 4. Start the server from the server folder:
 
    ```sh

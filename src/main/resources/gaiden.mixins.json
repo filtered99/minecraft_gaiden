@@ -8,6 +8,7 @@
 		"BlockMixin",
 		"BoatEntityMixin",
 		"BookshelfBlockMixin",
+		"ClientNetworkHandlerMixin",
 		"ClientPlayerEntityAccessor",
 		"ClientPlayerEntitySkinMixin",
 		"CraftingManagerMixin",

@@ -3,10 +3,8 @@
 	"minVersion": "0.8",
 	"package": "io.github.filtered99.gaiden.server.mixin",
 	"compatibilityLevel": "JAVA_8",
-	"mixins": [
-	],
-	"client": [
-	],
+	"mixins": [],
+	"client": [],
 	"server": [
 		"BlockMixin",
 		"BoatEntityMixin",
@@ -16,8 +14,10 @@
 		"FireBlockMixin",
 		"GlassBlockMixin",
 		"GlowstoneBlockMixin",
+		"LoginCheckThreadMixin",
 		"PlayerEntityMixin",
 		"PlayerManagerMixin",
+		"ServerLoginNetworkHandlerAccessor",
 		"SignItemMixin",
 		"StairsBlockMixin"
 	],

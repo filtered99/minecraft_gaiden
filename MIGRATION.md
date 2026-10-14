@@ -102,6 +102,19 @@ Prism's Microsoft sign-in is reused; the mod reads only the profile id from the 
 | Outer layers (jacket, sleeves, pants) checked specifically | Untested |
 | Behaviour during a network outage while playing | Untested (cached skins and the default skin are used on failure) |
 
+## Added after the port: online-mode login
+
+Alpha's online mode relied on minecraft.net's `joinserver.jsp` and `checkserver.jsp`, which no longer exist, so every
+login failed. The client mod now tells Mojang's session server it is joining (`/session/minecraft/join`, using the
+launcher's Microsoft session; the access token goes only to sessionserver.mojang.com) and the server mod checks it
+(`/session/minecraft/hasJoined`).
+
+| Part | Status |
+|---|---|
+| A real Microsoft account joins an online-mode server | **Verified (runtime)**, 2026-10-14: Filtered99 was verified by Mojang and joined |
+| Someone using a real player's name without their session is refused | **Verified (runtime)**, 2026-10-14: refused with "Failed to verify username!" |
+| A player without a Microsoft session sees a clear message | Untested in-game (the client refuses before contacting the server) |
+
 ## In-game test plan
 
 In singleplayer, steps 1–8 are covered: the data by the self test (55/55 on 2026-10-14) and the gameplay (fire, boat, fence stacking, spawn anchor with save/reload, F3 text) by a play session the same day.
