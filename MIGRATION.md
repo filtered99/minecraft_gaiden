@@ -118,6 +118,20 @@ launcher's Microsoft session; the access token goes only to sessionserver.mojang
 | Someone using a real player's name without their session is refused | **Verified (runtime)**, 2026-10-14: refused with "Failed to verify username!" |
 | A player without a Microsoft session sees a clear message | Untested in-game (the client refuses before contacting the server) |
 
+## Added after the port: world generation and rotatable logs
+
+New chunks get extra features after Alpha's own decoration, using a separate random seeded from the world seed and
+chunk, so vanilla terrain, ores and trees are unchanged. The same code (`GaidenWorldGen`) runs in the client and server
+mods, so singleplayer and multiplayer worlds match. Logs now face the way they are placed.
+
+| Part | Status |
+|---|---|
+| Obsidian pockets: small veins in stone at y 4-31, about 1 in 5 chunks | **Verified (self test + runtime)**, 2026-10-14 |
+| Boulders: mossy cobblestone, about 1 in 8 forest chunks and 1 in 15 on hills (y > 80) | **Verified (self test + runtime)**, 2026-10-14. The hill case is not covered by the self test |
+| Fallen logs: 3-5 logs lying on grass or dirt, 1 in 6 forest chunks | **Verified (self test + runtime)**, 2026-10-14 |
+| Rotatable logs: direction from the clicked face (metadata 0 upright, 4 east-west, 8 north-south), rings on the ends, bark turned to run along the log | **Verified (self test + runtime)**, 2026-10-14: textures and placement by the self test, the bark direction seen in game |
+| Server sets the log direction when a player places a log | Applied (runtime): same placement code as the client; not played on a server yet |
+
 ## In-game test plan
 
 In singleplayer, steps 1–8 are covered: the data by the self test (55/55 on 2026-10-14) and the gameplay (fire, boat, fence stacking, spawn anchor with save/reload, F3 text) by a play session the same day.
